@@ -1,0 +1,80 @@
+/* Общие стили */
+body {
+    background-color: #f4f7fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+/* Navbar */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand img {
+    border-radius: 50%;
+}
+
+/* Jumbotron / приветственный блок */
+.jumbotron {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #fff;
+    padding: 3rem 2rem;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.jumbotron h1 {
+    font-weight: 700;
+}
+
+.jumbotron p {
+    font-size: 1.2rem;
+}
+
+/* Карточки товаров */
+.card {
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+}
+
+.card-title {
+    font-weight: 600;
+}
+
+.card-text {
+    font-size: 0.95rem;
+}
+
+/* Кнопки */
+.btn-primary {
+    background: #2575fc;
+    border: none;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: #6a11cb;
+}
+
+/* Форма обратной связи (contacts) */
+form {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+form .form-control {
+    border-radius: 10px;
+}
+
+form button {
+    border-radius: 10px;
+}
