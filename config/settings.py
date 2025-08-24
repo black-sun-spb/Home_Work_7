@@ -62,10 +62,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',  # Драйвер PostgreSQL
+        'NAME': 'shop_db',                          # Имя базы данных, которую создали
+        'USER': 'shop_user',                        # Пользователь базы данных
+        'PASSWORD': 'shop_password',                # Пароль пользователя
+        'HOST': 'localhost',                        # Сервер базы (локальный)
+        'PORT': '5432',                             # Порт PostgreSQL
     }
 }
+
 
 AUTH_PASSWORD_VALIDATORS = []
 
@@ -78,3 +83,6 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "catalog" / "static",
+]
