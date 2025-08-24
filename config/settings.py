@@ -11,12 +11,14 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-test-key'
-
-DEBUG = True
+SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = []
 
@@ -62,10 +64,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        "ENGINE": "django.db.backends.postgresql",             # Драйвер PostgreSQL
+        "NAME": os.getenv("DB_NAME"),                          # Имя базы данных, которую создали
+        "USER": os.getenv("DB_USER"),                          # Пользователь базы данных
+        "PASSWORD": os.getenv("DB_PASSWORD"),                  # Пароль пользователя
+        "HOST": os.getenv("DB_HOST"),                          # Сервер базы (локальный)
+        "PORT": os.getenv("DB_PORT"),                          # Порт PostgreSQL
     }
 }
+
 
 AUTH_PASSWORD_VALIDATORS = []
 
@@ -78,3 +85,9 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "catalog" / "static",
+]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
