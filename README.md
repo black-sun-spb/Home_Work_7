@@ -10,15 +10,21 @@
 - HTML/CSS
 
 ## Возможности проекта
-- Создан Django-проект и приложение `catalog`
-- Модели `Product` и `Category` с базовыми полями
-- Админка с регистрацией моделей и фильтрацией/поиском
-- Подключена база данных PostgreSQL
-- Работа с фикстурами для моделей
-- Кастомная команда для наполнения тестовыми данными
-- Страницы: главная с последними товарами и страница контактов
+- Django-проект с приложением `catalog`
+- Модели:
+  - `Product` (название, описание, цена, категория, изображение, дата создания)
+  - `Category` (название, дата создания)
+  - `Contact` (для формы обратной связи)
+- Админка с регистрацией моделей, фильтрацией и поиском
+- Работа с фикстурами и кастомной командой для наполнения тестовыми данными
+- Страницы:
+  - Главная с последними товарами и пагинацией
+  - Подробная страница товара
+  - Страница контактов с формой обратной связи
+  - Форма добавления новых товаров (для администраторов)
 - Поддержка статики и медиа файлов
-- Форма обратной связи с сохранением данных через админку
+- Вывод сообщений пользователю через Django messages
+- Безопасное хранение секретов через `.env`
 
 ## Установка проекта
 1. Клонируем репозиторий:
@@ -58,7 +64,12 @@ python manage.py migrate
 ```
 python manage.py createsuperuser
 ```
-7. Запускаем сервер:
+7. Загружаем тестовые данные (опционально):
+```
+python manage.py loaddata catalog/fixtures/categories.json
+python manage.py loaddata catalog/fixtures/products.json
+```
+8. Запускаем сервер:
 
 ```
 python manage.py runserver
@@ -71,12 +82,6 @@ python manage.py runserver
 
 Страница контактов: http://127.0.0.1:8000/contacts/
 
-Для загрузки тестовых данных используем кастомную команду или фикстуры:
-
-```
-python manage.py loaddata catalog/fixtures/categories.json
-python manage.py loaddata catalog/fixtures/products.json
-```
 ## Структура проекта
 ```
 shop_project/
@@ -94,6 +99,7 @@ shop_project/
 ├─ requirements.txt
 └─ README.md
 ```
+
 ## Переменные окружения
 Все секретные ключи и настройки базы данных вынесены в .env
 
@@ -101,19 +107,15 @@ shop_project/
 
 Настройки включают:
 
-    SECRET_KEY
-
-    DEBUG
-
-    DATABASE_NAME
-
-    DATABASE_USER
-
-    DATABASE_PASSWORD
-
-    DATABASE_HOST
-
-    DATABASE_PORT
+```
+SECRET_KEY=
+DEBUG=
+DATABASE_NAME=
+DATABASE_USER=
+DATABASE_PASSWORD=
+DATABASE_HOST=
+DATABASE_PORT=
+```
 
 ## Лицензия
 
