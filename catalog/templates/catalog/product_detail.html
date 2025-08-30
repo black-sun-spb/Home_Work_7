@@ -1,0 +1,16 @@
+{% extends "catalog/base.html" %}
+
+{% block title %}{{ product.name }} - ShopProject{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'catalog/images/nophoto.jpg' %}{% endif %}"
+         class="card-img-top" alt="{{ product.name }}">
+    <div class="card-body">
+        <h2 class="card-title">{{ product.name }}</h2>
+        <p class="card-text">{{ product.description }}</p>
+        <p class="fw-bold">Цена: {{ product.price }} ₽</p>
+        <a href="{% url 'catalog:home' %}" class="btn btn-secondary">Назад</a>
+    </div>
+</div>
+{% endblock %}
