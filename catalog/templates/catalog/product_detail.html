@@ -1,16 +1,32 @@
 {% extends "catalog/base.html" %}
+{% load static %}
 
 {% block title %}{{ product.name }} - ShopProject{% endblock %}
 
 {% block content %}
-<div class="card shadow-sm">
-    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'catalog/images/nophoto.jpg' %}{% endif %}"
-         class="card-img-top" alt="{{ product.name }}">
+<div class="card shadow-sm mx-auto" style="max-width: 600px;">
+    {% if product.image %}
+        <img src="{{ product.image.url }}"
+             class="card-img-top img-fluid"
+             alt="{{ product.name }}"
+             style="max-height: 400px; object-fit: contain;">
+    {% else %}
+        <img src="{% static 'catalog/images/nophoto.jpg' %}"
+             class="card-img-top img-fluid"
+             alt="Нет изображения"
+             style="max-height: 400px; object-fit: contain;">
+    {% endif %}
+
     <div class="card-body">
         <h2 class="card-title">{{ product.name }}</h2>
         <p class="card-text">{{ product.description }}</p>
         <p class="fw-bold">Цена: {{ product.price }} ₽</p>
-        <a href="{% url 'catalog:home' %}" class="btn btn-secondary">Назад</a>
+
+        <div class="d-flex gap-2 mt-3">
+            <a href="{% url 'catalog:home' %}" class="btn btn-secondary">⬅ Назад</a>
+            <a href="{% url 'catalog:edit_product' product.pk %}" class="btn btn-warning">✏ Редактировать</a>
+            <a href="{% url 'catalog:delete_product' product.pk %}" class="btn btn-danger">🗑 Удалить</a>
+        </div>
     </div>
 </div>
 {% endblock %}
