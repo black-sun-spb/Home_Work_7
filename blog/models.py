@@ -9,9 +9,13 @@ class BlogPost(models.Model):
     is_published = models.BooleanField(default=False, verbose_name="Опубликовано")
     views_count = models.PositiveIntegerField(default=0, verbose_name="Просмотры")
 
+    class Meta:
+        permissions = [
+            ("can_manage_blog", "Can manage blog posts"),
+        ]
+
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
         return reverse("blog:post_detail", kwargs={"pk": self.pk})
-

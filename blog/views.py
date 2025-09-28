@@ -1,9 +1,14 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.mail import send_mail
 from .models import BlogPost
 from django.conf import settings
 
+# Миксин для проверки, что пользователь — контент-менеджер
+class ContentManagerRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_authenticated and self.request.user.groups.filter(name="Контент-менеджер").exists()
 
 # Список статей (только опубликованные)
 class BlogListView(ListView):
@@ -13,7 +18,6 @@ class BlogListView(ListView):
 
     def get_queryset(self):
         return BlogPost.objects.filter(is_published=True).order_by("-created_at")
-
 
 # Детали статьи (+ увеличиваем просмотры)
 class BlogDetailView(DetailView):
@@ -26,7 +30,6 @@ class BlogDetailView(DetailView):
         obj.views_count += 1
         obj.save()
 
-        # Доп. задание: письмо при 100 просмотрах
         if obj.views_count == 100:
             send_mail(
                 "Статья набрала 100 просмотров!",
@@ -37,16 +40,14 @@ class BlogDetailView(DetailView):
             )
         return obj
 
-
-# Создание статьи
-class BlogCreateView(CreateView):
+# Создание статьи — только для контент-менеджеров
+class BlogCreateView(LoginRequiredMixin, ContentManagerRequiredMixin, CreateView):
     model = BlogPost
     fields = ["title", "content", "preview", "is_published"]
     template_name = "blog/blogpost_form.html"
 
-
-# Редактирование статьи (после редирект на детальный просмотр)
-class BlogUpdateView(UpdateView):
+# Редактирование статьи — только для контент-менеджеров
+class BlogUpdateView(LoginRequiredMixin, ContentManagerRequiredMixin, UpdateView):
     model = BlogPost
     fields = ["title", "content", "preview", "is_published"]
     template_name = "blog/blogpost_form.html"
@@ -54,10 +55,8 @@ class BlogUpdateView(UpdateView):
     def get_success_url(self):
         return self.object.get_absolute_url()
 
-
-# Удаление статьи
-class BlogDeleteView(DeleteView):
+# Удаление статьи — только для контент-менеджеров
+class BlogDeleteView(LoginRequiredMixin, ContentManagerRequiredMixin, DeleteView):
     model = BlogPost
     template_name = "blog/blogpost_confirm_delete.html"
-    success_url = reverse_lazy("blog:blogpost_list")
-
+    success_url = reverse_lazy("blog:blog_list")
