@@ -118,6 +118,9 @@ CACHES = {
     }
 }
 
+CACHE_ENABLED = True
+
+
 # Сессии тоже можно хранить в Redis:
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"

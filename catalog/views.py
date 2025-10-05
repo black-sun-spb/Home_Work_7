@@ -12,6 +12,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .services import get_products_by_category
 from django.core.cache import cache
 from django.contrib.auth.decorators import permission_required
+from django.conf import settings
 
 
 # Главная страница — общедоступна
@@ -22,10 +23,13 @@ class HomeView(ListView):
     paginate_by = 6
 
     def get_queryset(self):
-        products = cache.get('all_products')
-        if not products:
-            products = Product.objects.filter(status='published').order_by('-created_at')
-            cache.set('all_products', products, 60 * 5)  # кэшируем на 5 минут
+        if getattr(settings, "CACHE_ENABLED", False):
+            products = cache.get('all_products')
+            if not products:
+                products = Product.objects.filter(status="published").order_by('-created_at')
+                cache.set('all_products', products, 60 * 5)
+        else:
+            products = Product.objects.filter(status="published").order_by('-created_at')
         return products
 
 
