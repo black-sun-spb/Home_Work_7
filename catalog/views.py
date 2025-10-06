@@ -4,9 +4,15 @@ from django.views.generic import (
     CreateView, UpdateView, DeleteView
 )
 from django.urls import reverse_lazy
-from django.core.exceptions import PermissionDenied
-from .models import Product, Contact
+from .models import Product, Contact, Category
 from .forms import ProductForm
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+from django.shortcuts import render, get_object_or_404, redirect
+from .services import get_products_by_category
+from django.core.cache import cache
+from django.contrib.auth.decorators import permission_required
+from django.conf import settings
 
 
 # Главная страница — общедоступна
@@ -15,7 +21,16 @@ class HomeView(ListView):
     template_name = 'catalog/home.html'
     context_object_name = 'page_obj'
     paginate_by = 6
-    ordering = ['-created_at']
+
+    def get_queryset(self):
+        if getattr(settings, "CACHE_ENABLED", False):
+            products = cache.get('all_products')
+            if not products:
+                products = Product.objects.filter(status="published").order_by('-created_at')
+                cache.set('all_products', products, 60 * 5)
+        else:
+            products = Product.objects.filter(status="published").order_by('-created_at')
+        return products
 
 
 # Страница контактов — общедоступна
@@ -29,6 +44,7 @@ class ContactsView(TemplateView):
 
 
 # Детали товара — общедоступны
+@method_decorator(cache_page(60 * 5), name='dispatch')  # кэш на 5 минут
 class ProductDetailView(DetailView):
     model = Product
     template_name = 'catalog/product_detail.html'
@@ -75,3 +91,26 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         user = self.request.user
         # ✅ удалять может владелец или модератор (имеющий право на удаление товара)
         return user == product.owner or user.has_perm("catalog.delete_product")
+
+def products_by_category(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+    products = get_products_by_category(category.id)
+    return render(request, 'catalog/products_by_category.html', {
+        'category': category,
+        'products': products
+    })
+
+@permission_required('catalog.can_unpublish_product', raise_exception=True)
+def publish_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    product.is_published = True
+    product.save()
+    return redirect('catalog:product_detail', pk=pk)
+
+
+@permission_required('catalog.can_unpublish_product', raise_exception=True)
+def unpublish_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    product.is_published = False
+    product.save()
+    return redirect('catalog:product_detail', pk=pk)
